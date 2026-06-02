@@ -1,0 +1,111 @@
+Realiza únicamente estas modificaciones en la aplicación existente Thepoint.
+
+NO reconstruir la app.
+NO modificar diseño.
+NO modificar carrito.
+NO modificar panel admin.
+NO modificar productos.
+
+━━━━━━━━━━━━━━━━━━━
+CAMBIO DE WHATSAPP
+━━━━━━━━━━━━━━━━━━━
+
+Actualizar TODOS los lugares donde se use el número de WhatsApp.
+
+Número anterior:
+3411674625
+
+Nuevo número:
+3411156618
+
+Verificar:
+
+* checkout
+* botón WhatsApp
+* enlaces wa.me
+* generación automática de pedidos
+* cualquier configuración hardcodeada
+
+Todo debe enviar los pedidos al nuevo número:
+
+3411156618
+
+━━━━━━━━━━━━━━━━━━━
+CORREGIR UBICACIÓN EN CELULARES
+━━━━━━━━━━━━━━━━━━━
+
+Actualmente en Android y iPhone el botón de compartir ubicación no funciona correctamente.
+
+Investiga la implementación actual y corrígela.
+
+Objetivo:
+
+Cuando el usuario pulse:
+
+"Compartir ubicación"
+
+debe solicitar permisos del navegador y obtener GPS real usando:
+
+navigator.geolocation.getCurrentPosition()
+
+Requisitos:
+
+* Compatible con Android
+* Compatible con iPhone
+* Compatible con Chrome móvil
+* Compatible con Safari móvil
+
+Si la ubicación se obtiene correctamente:
+
+Guardar:
+
+* latitud
+* longitud
+
+Mostrar:
+
+Ubicación obtenida correctamente
+
+Y generar automáticamente:
+
+https://maps.google.com/?q=LATITUD,LONGITUD
+
+Ese enlace debe enviarse también en el pedido de WhatsApp.
+
+Ejemplo:
+
+Ubicación:
+https://maps.google.com/?q=19.705,-103.461
+
+━━━━━━━━━━━━━━━━━━━
+MANEJO DE ERRORES
+━━━━━━━━━━━━━━━━━━━
+
+Si el usuario niega permisos:
+
+Mostrar mensaje amigable:
+
+"No pudimos obtener tu ubicación. Puedes escribir tu dirección manualmente."
+
+Si el GPS tarda demasiado:
+
+Mostrar:
+
+"Intentando obtener ubicación..."
+
+y un indicador de carga.
+
+━━━━━━━━━━━━━━━━━━━
+IMPORTANTE
+━━━━━━━━━━━━━━━━━━━
+
+No eliminar el campo de dirección manual.
+
+Mantener ambas opciones:
+
+1. Compartir ubicación GPS
+2. Escribir dirección manual
+
+Si la ubicación GPS falla, el usuario debe poder seguir haciendo el pedido normalmente.
+
+Revisar por qué actualmente funciona en escritorio pero no en Android ni en iPhone y aplicar una solución real compatible con dispositivos móviles.

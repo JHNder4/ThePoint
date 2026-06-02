@@ -1,0 +1,157 @@
+Edita la app EXISTENTE de Thepoint.
+
+NO reconstruyas la app.
+Mantén funcionando la estructura actual, las animaciones, el carrito y el checkout por WhatsApp.
+
+Actualiza las tarjetas de productos y los visuales usando los siguientes diseños e inspiración personalizada.
+
+IMPORTANTE:
+
+* Mantener la estética futurista oscura
+* Mantener la app limpia y minimalista
+* Hacer que todas las tarjetas de productos se vean cohesivas
+* Usar animaciones suaves
+* Mantener el diseño responsive para móviles
+* Actualizar todos los precios a $140 en lugar de $130
+* Eliminar cualquier texto que diga:
+
+  * “rápido elegante y premium”
+  * “Fast delivery. Simple. Direct.”
+* TODA la web debe estar completamente en español, no en inglés
+
+━━━━━━━━━━━━━━━━━━━
+ACTUALIZACIÓN DE PRODUCTOS
+━━━━━━━━━━━━━━━━━━━
+
+Actualizar precios:
+
+* Soda → $140
+* Verde → $140
+* Frío → $140
+
+━━━━━━━━━━━━━━━━━━━
+TARJETA DE PRODUCTO FRÍO
+━━━━━━━━━━━━━━━━━━━
+
+Reemplazar la tarjeta actual de Frío por una nueva versión inspirada en esta estructura:
+
+* Imagen grande centrada del producto
+* Título del producto:
+  "FRÍO"
+* Precio:
+  "$140 / 1 PZ"
+* Subtítulo:
+  "LISTO PARA DISFRUTAR"
+
+ESTILO:
+
+* Diseño de tarjeta oscura
+* Bordes redondeados
+* Sombra suave
+* Glow sutil
+* Glassmorphism
+* Animación hover suave
+* Tipografía grande
+* Espaciado limpio
+
+Mantener la funcionalidad existente:
+
+* al hacer clic agrega al carrito
+* las animaciones siguen funcionando
+
+━━━━━━━━━━━━━━━━━━━
+TARJETA DE PRODUCTO SODA
+━━━━━━━━━━━━━━━━━━━
+
+Reemplazar la tarjeta actual de Soda por un diseño limpio inspirado en:
+
+* Imagen grande centrada
+* Título grande:
+  "SODA"
+* Precio moderno grande:
+  "$140"
+* Texto pequeño:
+  "1 pz"
+
+ESTILO:
+
+* Diseño minimalista
+* Tipografía fuerte
+* Mejor espaciado
+* Hover suave
+* Sensación de tarjeta flotante
+
+━━━━━━━━━━━━━━━━━━━
+TARJETA DE PRODUCTO VERDE
+━━━━━━━━━━━━━━━━━━━
+
+Reemplazar la tarjeta actual de Verde por un estilo premium inspirado en lujo usando:
+
+* Imagen de fondo del producto
+* Texto grande:
+  "VERDE"
+* Subtítulo:
+  "CEPA PREMIUM"
+* Número flotante:
+  "140"
+* Texto curvo tipo sello:
+  "CALIDAD GARANTIZADA • 100% ORGÁNICO"
+* Texto inferior:
+  "COSECHA 2026"
+* Precio:
+  "$140 / 3.5"
+
+ESTILO:
+
+* Estética oscura cinematográfica
+* Overlays elegantes
+* Tipografía flotante
+* Efectos de movimiento suaves
+* Detalles con gradientes
+* Presentación premium del producto
+
+━━━━━━━━━━━━━━━━━━━
+ACTUALIZACIÓN DE UBICACIÓN EN WHATSAPP
+━━━━━━━━━━━━━━━━━━━
+
+Actualizar el comportamiento de ubicación en el checkout por WhatsApp.
+
+Actualmente la app envía coordenadas crudas.
+Cambiar esto para que la ubicación se envíe como un enlace real de Google Maps estilo WhatsApp en lugar de texto plano con latitud y longitud.
+
+REQUISITOS:
+
+* Cuando el usuario comparta ubicación, generar una URL clickeable de Google Maps
+* Formatearla similar a una ubicación compartida real de WhatsApp
+* Formato ejemplo:
+  https://maps.google.com/?q=LATITUDE,LONGITUDE
+* El mensaje debe verse limpio y amigable
+* Mantener funcionando el flujo actual del checkout
+* No eliminar ninguna funcionalidad de WhatsApp
+
+━━━━━━━━━━━━━━━━━━━
+REGLAS GENERALES DE UI
+━━━━━━━━━━━━━━━━━━━
+
+* Mantener todas las tarjetas visualmente consistentes
+* Mantener la estética futurista en modo oscuro
+* Usar la fuente Inter
+* Agregar transiciones suaves
+* Usar Framer Motion donde sea apropiado
+* Mantener espacios limpios
+* No saturar la interfaz
+* Mantener la estructura y funcionalidad actual de la app
+
+━━━━━━━━━━━━━━━━━━━
+IMPORTANTE
+━━━━━━━━━━━━━━━━━━━
+
+NO eliminar:
+
+* carrito
+* checkout por WhatsApp
+* sistema de categorías
+* navegación existente
+* responsive móvil
+
+Solo mejorar los visuales, actualizar los precios, mejorar los diseños de las tarjetas de productos, eliminar los textos no deseados y mejorar la experiencia de compartir ubicación por WhatsApp.

@@ -1,0 +1,106 @@
+MIGRAR THEPOINT DE NETLIFY A VERCEL
+
+IMPORTANTE:
+
+Netlify ya no será utilizado.
+
+Quiero que prepares el proyecto para desplegarse en Vercel y que funcione completamente con Supabase.
+
+━━━━━━━━━━━━━━━━━━━
+OBJETIVO
+━━━━━━━━━━━━━━━━━━━
+
+La aplicación debe funcionar en:
+
+https://thepoint.vercel.app
+
+(o el dominio que asigne Vercel)
+
+Todo debe funcionar sin depender de Netlify.
+
+━━━━━━━━━━━━━━━━━━━
+VERIFICAR
+━━━━━━━━━━━━━━━━━━━
+
+1. React Router funcionando correctamente en Vercel.
+2. Rutas funcionando:
+
+   * /
+   * /admin
+   * /track/:pedidoId
+   * cualquier ruta adicional
+3. Sin errores 404 al recargar páginas.
+4. Sin dependencias de Netlify.
+
+━━━━━━━━━━━━━━━━━━━
+SUPABASE
+━━━━━━━━━━━━━━━━━━━
+
+Confirmar que:
+
+* Los pedidos se guardan en Supabase.
+* El panel admin lee desde Supabase.
+* El tracking lee desde Supabase.
+* Los cambios de estado se guardan en Supabase.
+* Los productos se leen desde Supabase.
+
+No usar localStorage para pedidos ni tracking.
+
+━━━━━━━━━━━━━━━━━━━
+CONFIGURACIÓN
+━━━━━━━━━━━━━━━━━━━
+
+Generar y revisar:
+
+* vercel.json (si es necesario)
+* configuración de build
+* configuración SPA
+* variables de entorno requeridas
+
+━━━━━━━━━━━━━━━━━━━
+VARIABLES DE ENTORNO
+━━━━━━━━━━━━━━━━━━━
+
+Indícame exactamente cuáles debo configurar en Vercel.
+
+Ejemplo:
+
+VITE_SUPABASE_URL
+
+VITE_SUPABASE_ANON_KEY
+
+No asumir ninguna variable.
+
+━━━━━━━━━━━━━━━━━━━
+DEPLOY
+━━━━━━━━━━━━━━━━━━━
+
+Al finalizar, indícame:
+
+1. Cómo exportar el proyecto.
+2. Qué carpeta debo subir.
+3. Qué comando de build usa el proyecto.
+4. Qué comando de output usa el proyecto.
+5. Cómo desplegarlo correctamente en Vercel.
+
+━━━━━━━━━━━━━━━━━━━
+VALIDACIÓN FINAL
+━━━━━━━━━━━━━━━━━━━
+
+Antes de terminar verifica:
+
+✅ Pedido creado desde otro dispositivo aparece en Admin.
+
+✅ Tracking funciona desde otro dispositivo.
+
+✅ Estados se actualizan correctamente.
+
+✅ Funciona completamente con Supabase.
+
+✅ Compatible con móviles Android y iPhone.
+
+✅ Compatible con Vercel.
+
+No dar por válido porque funcione en Replit.
+
+Validar pensando en producción usando Vercel.

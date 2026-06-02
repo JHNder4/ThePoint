@@ -1,0 +1,161 @@
+INTEGRACIÓN COMPLETA CON SUPABASE + COMPATIBILIDAD TOTAL CON NETLIFY
+
+IMPORTANTE:
+Todo debe funcionar en producción usando Netlify.
+NO usar Replit como backend ni depender de localStorage para pedidos o seguimiento.
+
+Datos de Supabase:
+
+Project URL:
+https://nmlnfpjxsyyyzciighps.supabase.co
+
+Publishable Key:
+(usar la clave que ya configuré)
+
+━━━━━━━━━━━━━━━━━━━
+OBJETIVO PRINCIPAL
+━━━━━━━━━━━━━━━━━━━
+
+Actualmente:
+
+* Los pedidos llegan por WhatsApp.
+* El panel admin funciona.
+* El tracking existe.
+
+Pero:
+
+* Los pedidos creados por otros usuarios no aparecen en Admin.
+* El tracking falla para otros usuarios.
+* Todo depende de localStorage.
+
+Migrar completamente a Supabase.
+
+━━━━━━━━━━━━━━━━━━━
+PEDIDOS
+━━━━━━━━━━━━━━━━━━━
+
+Cuando cualquier cliente haga un pedido:
+
+* Generar ID único tipo TP-XXXXX
+* Guardar en Supabase
+* Guardar fecha
+* Guardar productos
+* Guardar total
+* Guardar dirección
+* Guardar ubicación GPS si existe
+* Guardar estado
+* Guardar tiempo estimado
+
+Estados:
+
+* Pedido recibido
+* En preparación
+* En camino
+* Entregado
+* Cancelado
+
+━━━━━━━━━━━━━━━━━━━
+PANEL ADMIN
+━━━━━━━━━━━━━━━━━━━
+
+El panel admin debe:
+
+* Leer pedidos desde Supabase
+* Mostrar pedidos creados por cualquier usuario
+* Mostrar pedidos en tiempo real
+* Permitir cambiar estado
+* Permitir modificar tiempo estimado
+* Mostrar ubicación del cliente
+* Botón "Abrir en Google Maps"
+
+No usar localStorage para pedidos.
+
+━━━━━━━━━━━━━━━━━━━
+TRACKING
+━━━━━━━━━━━━━━━━━━━
+
+Ruta:
+
+/track/:pedidoId
+
+Debe consultar Supabase.
+
+Mostrar:
+
+* ID del pedido
+* Estado actual
+* Tiempo estimado
+* Productos
+
+Si el estado cambia en Admin, el cliente debe verlo.
+
+El cliente NO debe ver la ubicación del negocio.
+
+El cliente NO debe ver la ubicación del repartidor.
+
+Solo debe ver:
+
+* Pedido recibido
+* En preparación
+* En camino
+* Entregado
+* Cancelado
+
+━━━━━━━━━━━━━━━━━━━
+NETLIFY
+━━━━━━━━━━━━━━━━━━━
+
+Todo debe funcionar desde:
+
+https://thepointint.netlify.app
+
+No generar enlaces Replit.
+
+Todos los enlaces de seguimiento deben usar Netlify.
+
+Ejemplo:
+
+https://thepointint.netlify.app/track/TP-12345
+
+Verificar:
+
+* React Router
+* _redirects
+* netlify.toml
+* SPA routing
+
+Para evitar errores 404.
+
+━━━━━━━━━━━━━━━━━━━
+SUPABASE
+━━━━━━━━━━━━━━━━━━━
+
+Generar:
+
+1. SQL completo para crear tablas.
+2. SQL para índices necesarios.
+3. SQL para permisos/RLS si es necesario.
+4. Instrucciones exactas para ejecutar el SQL.
+
+━━━━━━━━━━━━━━━━━━━
+AL FINAL
+━━━━━━━━━━━━━━━━━━━
+
+Indicar:
+
+1. Qué variables de entorno debo poner en Netlify.
+2. Qué SQL debo ejecutar en Supabase.
+3. Qué archivos fueron modificados.
+4. Si debo volver a hacer build.
+5. Si debo volver a desplegar en Netlify.
+
+Antes de terminar, verificar:
+
+✅ Pedido creado desde otro dispositivo aparece en Admin.
+
+✅ Tracking funciona desde otro dispositivo.
+
+✅ Funciona correctamente después del deploy en Netlify.
+
+No dar por válido solo porque funciona en Replit.
+Validar pensando en producción con Netlify.

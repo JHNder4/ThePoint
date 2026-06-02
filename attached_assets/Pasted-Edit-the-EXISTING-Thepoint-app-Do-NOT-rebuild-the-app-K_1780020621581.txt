@@ -1,0 +1,104 @@
+Edit the EXISTING Thepoint app.
+
+Do NOT rebuild the app.
+Keep the current structure, design and flow.
+Only add and improve the product/category behavior.
+
+PRODUCT CHANGES:
+
+Rename products:
+
+* Soda
+* Soda Lavada
+* Verde
+* Frio
+
+Replace the current “Preroll” product with:
+
+# “Pre-rolls”
+
+IMPORTANT:
+Pre-rolls should now behave like a CATEGORY.
+
+When the user taps “Pre-rolls”, open a new elegant screen/page/modal that shows the Pre-rolls menu.
+
+STYLE:
+Keep the premium futuristic dark aesthetic.
+Do not break the elegance of the app.
+
+PRE-ROLLS MENU:
+
+Title:
+“MENÚ PRE ROLLS XXL”
+
+Products:
+
+* Blunt Wrap XXL Uva — $80
+* Blunt Wrap XXL Blueberry — $80
+* Blunt Wrap XXL Chocolate Amargo — $90
+* Blunt Wrap XXL Mango — $85
+
+PROMOTIONS SECTION:
+Create elegant promo cards without ruining the minimalist design.
+
+Promos:
+
+* 2 x $150
+* 3 x $220
+
+IMPORTANT:
+When pressing a promo card:
+
+* automatically add the promo bundle to the cart
+* show it correctly in checkout and WhatsApp order
+
+Example:
+“Promo Pre-rolls 2x150”
+“Promo Pre-rolls 3x220”
+
+PROMO DESIGN:
+
+* premium
+* glowing border
+* subtle animation
+* modern layout
+* keep minimalist aesthetic
+
+NEW CATEGORY:
+Add another category product called:
+
+# “Comestibles”
+
+When touching “Comestibles”, open another elegant category screen/page/modal.
+
+COMESTIBLES MENU:
+
+* Brownies de chocolate
+* Galletas con chispas de chocolate
+
+PROMOTIONS:
+
+* 2 x $150
+* 3 x $220
+
+Promo cards should also:
+
+* add directly to cart
+* appear correctly in checkout
+* appear correctly in WhatsApp message
+
+UI REQUIREMENTS:
+
+* Smooth transitions
+* Framer Motion animations
+* Maintain dark mode
+* Keep responsive mobile design
+* Use premium spacing
+* Large modern typography
+* Keep app lightweight and fast
+
+IMPORTANT:
+Do not remove the current cart system.
+Do not break WhatsApp checkout.
+Do not remove current functionality.
+Only expand the existing product/category system elegantly.

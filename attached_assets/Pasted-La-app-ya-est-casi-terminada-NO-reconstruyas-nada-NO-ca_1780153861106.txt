@@ -1,0 +1,115 @@
+La app ya está casi terminada.
+
+NO reconstruyas nada.
+NO cambies estructura.
+NO modifiques carrito, navegación, categorías o checkout.
+
+SOLO falta actualizar las imágenes y visuales de estos productos:
+
+━━━━━━━━━━━━━━━━━━━
+FRÍO
+━━━━━━━━━━━━━━━━━━━
+
+Usa una imagen con estética inspirada en cristal, hielo y superficies congeladas.
+
+IMPORTANTE:
+
+* mantener calidad alta
+* hacer que luzca premium
+* integrar correctamente al card actual
+
+Agregar:
+
+* glow azul sutil
+* sombra suave
+* animación hover elegante
+* transición suave
+* efecto cinematográfico
+
+Mantener:
+
+* texto actual
+* precio $140
+* funcionalidad actual
+
+━━━━━━━━━━━━━━━━━━━
+SODA
+━━━━━━━━━━━━━━━━━━━
+
+Usa una imagen con estética de polvo mineral blanco, texturas limpias y diseño minimalista premium.
+
+NO rehacer el sistema.
+SOLO actualizar:
+
+* imagen
+* composición visual
+* iluminación
+* estética premium
+
+Mantener:
+
+* SODA
+* $140
+* 1 pz
+
+Hacer que combine visualmente con:
+
+* FRÍO
+* VERDE
+* estética futurista oscura de Thepoint
+
+━━━━━━━━━━━━━━━━━━━
+SODA LAVADA
+━━━━━━━━━━━━━━━━━━━
+
+Genera una imagen premium ORIGINAL para SODA LAVADA.
+
+ESTILO:
+
+* ultra premium
+* exclusiva
+* oscura
+* luxury cyberpunk
+* cinematográfica
+* humo suave
+* iluminación azul/plata
+* sensación limitada y rara
+
+Inspiración visual:
+
+* cristales blancos refinados
+* acabados brillantes
+* detalles metálicos premium
+* apariencia exclusiva y sofisticada
+
+Texto integrado:
+
+* SODA LAVADA
+* PREMIUM
+* $500
+
+IMPORTANTE:
+La imagen debe verse:
+
+* más exclusiva que Soda
+* más elegante
+* más cara
+* más futurista
+
+Mantener:
+
+* responsive
+* hover effects
+* animaciones actuales
+* diseño limpio
+
+━━━━━━━━━━━━━━━━━━━
+REGLAS IMPORTANTES
+━━━━━━━━━━━━━━━━━━━
+
+* NO romper el layout actual
+* NO modificar funcionalidades
+* NO cambiar estructura
+* SOLO actualizar imágenes y visuales
+* mantener estética premium oscura
+* mantener consistencia visual en todos los productos
