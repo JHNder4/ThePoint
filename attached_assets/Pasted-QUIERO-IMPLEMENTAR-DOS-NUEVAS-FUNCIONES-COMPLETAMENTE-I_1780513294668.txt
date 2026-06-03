@@ -1,0 +1,130 @@
+QUIERO IMPLEMENTAR DOS NUEVAS FUNCIONES COMPLETAMENTE INTEGRADAS CON SUPABASE Y EL PANEL ADMIN EXISTENTE.
+
+========================================
+FUNCIÓN 1: BANNER ADMINISTRABLE
+===============================
+
+OBJETIVO:
+
+Que el banner principal de la tienda se administre desde Supabase y pueda modificarse desde el panel Admin sin tocar código.
+
+CREAR:
+
+Tabla banner_settings en Supabase.
+
+Campos:
+
+id
+title
+subtitle
+button_text
+button_link
+image_url
+is_active
+updated_at
+
+FUNCIONAMIENTO:
+
+* El frontend debe cargar el banner desde Supabase.
+* No debe existir texto, imagen ni promociones hardcodeadas.
+* El panel Admin debe permitir:
+
+  * editar título
+  * editar subtítulo
+  * editar texto del botón
+  * editar enlace del botón
+  * cambiar imagen
+  * activar/desactivar banner
+
+REGLAS:
+
+* Mostrar únicamente el banner activo.
+* Mantener el diseño actual.
+* Si no existe banner activo, mostrar un estado seguro sin errores.
+
+VALIDAR:
+
+* Cambio de imagen → se refleja en la tienda.
+* Cambio de texto → se refleja en la tienda.
+* Activar/desactivar → funciona correctamente.
+* Compatible con Supabase.
+* Compatible con Vercel.
+
+========================================
+FUNCIÓN 2: NOTIFICACIONES DE PEDIDOS EN TIEMPO REAL
+===================================================
+
+OBJETIVO:
+
+Que el panel Admin reciba alertas instantáneas cuando llegue un nuevo pedido.
+
+IMPLEMENTAR:
+
+Supabase Realtime para escuchar nuevos pedidos.
+
+CUANDO ENTRE UN PEDIDO NUEVO:
+
+* Mostrar notificación visual.
+* Mostrar indicador de nuevo pedido.
+* Actualizar contador de pedidos pendientes.
+* Reproducir sonido de notificación.
+* Sin necesidad de recargar la página.
+
+CREAR ESTADOS DE PEDIDO:
+
+nuevo
+confirmado
+preparando
+entregado
+cancelado
+
+REGLAS:
+
+* Todo pedido nuevo inicia automáticamente con estado "nuevo".
+* El Admin puede cambiar el estado desde el panel.
+* Los cambios deben guardarse en Supabase.
+* Actualizar la interfaz en tiempo real.
+
+PANEL ADMIN:
+
+Agregar sección de pedidos con:
+
+* número de pedido
+* cliente
+* productos
+* total
+* fecha
+* estado
+
+MOSTRAR:
+
+Pedidos nuevos
+Pedidos en proceso
+Pedidos completados
+
+VALIDAR:
+
+* Nuevo pedido genera alerta instantánea.
+* Sonido funciona correctamente.
+* Contador aumenta automáticamente.
+* Estado inicial = nuevo.
+* Cambio de estado se guarda en Supabase.
+* Funciona en móvil y escritorio.
+* Compatible con Vercel.
+* Compatible con Supabase Realtime.
+
+========================================
+IMPORTANTE
+==========
+
+No romper funcionalidades existentes.
+
+Mantener:
+
+* catálogo actual
+* promociones actuales
+* categorías actuales
+* carrito actual
+* panel Admin actual
+
+Antes de modificar archivos, analizar la estructura actual y reutilizar componentes existentes siempre que sea posible.

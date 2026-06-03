@@ -1,6 +1,8 @@
-import { useState, useRef, useCallback } from "react";
-import { motion } from "motion/react";
+import { useState, useRef, useCallback, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { ShoppingBag, Zap } from "lucide-react";
+import { getBanner, DEFAULT_BANNER } from "../admin/store";
+import { BannerSettings } from "../admin/types";
 
 interface HomeScreenProps {
   onStartOrder: () => void;
@@ -12,6 +14,11 @@ const TAP_RESET_MS = 2000;
 export function HomeScreen({ onStartOrder }: HomeScreenProps) {
   const [tapCount, setTapCount] = useState(0);
   const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [banner, setBanner] = useState<BannerSettings>(DEFAULT_BANNER);
+
+  useEffect(() => {
+    getBanner().then(setBanner).catch(() => {});
+  }, []);
 
   const handleLogoTap = useCallback(() => {
     setTapCount(prev => {
@@ -27,9 +34,15 @@ export function HomeScreen({ onStartOrder }: HomeScreenProps) {
     });
   }, []);
 
-  const goToAdmin = () => {
-    window.location.href = "/admin";
+  const handleButtonClick = () => {
+    if (banner.buttonLink) {
+      window.open(banner.buttonLink, "_blank");
+    } else {
+      onStartOrder();
+    }
   };
+
+  const showPromoBanner = banner.isActive && (banner.title || banner.subtitle);
 
   return (
     <motion.div
@@ -73,14 +86,16 @@ export function HomeScreen({ onStartOrder }: HomeScreenProps) {
           }}
         >
           <Zap className="w-3 h-3 text-blue-400" />
-          <span className="text-blue-400 text-xs font-semibold tracking-widest uppercase">Entrega Premium</span>
+          <span className="text-blue-400 text-xs font-semibold tracking-widest uppercase">
+            {banner.badgeText || "Entrega Premium"}
+          </span>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25, type: "spring", stiffness: 80, damping: 18 }}
-          className="mb-12 cursor-default select-none"
+          className="mb-8 cursor-default select-none"
           onClick={handleLogoTap}
         >
           <h1
@@ -92,13 +107,44 @@ export function HomeScreen({ onStartOrder }: HomeScreenProps) {
           </h1>
         </motion.div>
 
+        {/* Banner promocional */}
+        <AnimatePresence>
+          {showPromoBanner && (
+            <motion.div
+              initial={{ opacity: 0, y: 12, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 120, damping: 18 }}
+              className="w-full mb-6 rounded-2xl overflow-hidden relative"
+              style={{
+                background: "linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(9,9,11,0.95) 100%)",
+                border: "1px solid rgba(37,99,235,0.3)",
+              }}
+            >
+              {banner.imageUrl && (
+                <div className="absolute inset-0 opacity-15">
+                  <img src={banner.imageUrl} alt="" className="w-full h-full object-cover" />
+                </div>
+              )}
+              <div className="relative p-5 text-left">
+                {banner.title && (
+                  <p className="text-white font-bold text-base leading-tight">{banner.title}</p>
+                )}
+                {banner.subtitle && (
+                  <p className="text-[#A1A1AA] text-sm mt-1">{banner.subtitle}</p>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <motion.button
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.38, type: "spring", stiffness: 80 }}
           whileHover={{ scale: 1.03, y: -2 }}
           whileTap={{ scale: 0.97 }}
-          onClick={onStartOrder}
+          onClick={handleButtonClick}
           className="w-full relative py-5 px-8 rounded-2xl text-white font-semibold text-lg flex items-center justify-center gap-3 overflow-hidden transition-all duration-300 glow-blue glow-blue-hover"
           style={{ background: "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)" }}
         >
@@ -107,12 +153,12 @@ export function HomeScreen({ onStartOrder }: HomeScreenProps) {
             style={{ background: "linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)" }}
           />
           <ShoppingBag className="w-5 h-5 relative z-10 flex-shrink-0" />
-          <span className="relative z-10">Hacer pedido</span>
+          <span className="relative z-10">{banner.buttonText || "Hacer pedido"}</span>
         </motion.button>
       </div>
 
       <button
-        onClick={goToAdmin}
+        onClick={() => { window.location.href = "/admin"; }}
         aria-hidden="true"
         tabIndex={-1}
         className="absolute bottom-4 right-5 text-[#27272A] hover:text-[#3F3F46] transition-colors duration-300 text-lg leading-none select-none"

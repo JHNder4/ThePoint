@@ -1,18 +1,30 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Search, Package, Clock, Truck, CheckCircle2, XCircle, ChevronDown, MapPin, ExternalLink, Timer } from "lucide-react";
+import { Search, Package, Clock, Truck, CheckCircle2, XCircle, ChevronDown, MapPin, ExternalLink, Timer, Sparkles, ThumbsUp } from "lucide-react";
 import { Order, OrderStatus } from "../types";
 import { updateOrderStatus, updateOrderEta } from "../store";
 
-const STATUS_CONFIG: Record<OrderStatus, { label: string; color: string; bg: string; icon: React.ElementType }> = {
-  pending:      { label: "Recibido",      color: "text-amber-400",  bg: "rgba(251,191,36,0.1)",  icon: Clock },
-  preparing:    { label: "Preparando",    color: "text-orange-400", bg: "rgba(249,115,22,0.1)",  icon: Package },
-  "on-the-way": { label: "En camino",     color: "text-blue-400",   bg: "rgba(37,99,235,0.1)",   icon: Truck },
-  delivered:    { label: "Entregado",     color: "text-green-400",  bg: "rgba(34,197,94,0.1)",   icon: CheckCircle2 },
-  cancelled:    { label: "Cancelado",     color: "text-red-400",    bg: "rgba(239,68,68,0.1)",   icon: XCircle },
+const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border: string; icon: React.ElementType }> = {
+  // Nuevos estados
+  nuevo:       { label: "Nuevo",      color: "text-purple-400", bg: "rgba(168,85,247,0.1)", border: "rgba(168,85,247,0.3)", icon: Sparkles },
+  confirmado:  { label: "Confirmado", color: "text-amber-400",  bg: "rgba(251,191,36,0.1)", border: "rgba(251,191,36,0.3)", icon: ThumbsUp },
+  preparando:  { label: "Preparando", color: "text-orange-400", bg: "rgba(249,115,22,0.1)", border: "rgba(249,115,22,0.3)", icon: Package },
+  "en-camino": { label: "En camino",  color: "text-blue-400",   bg: "rgba(37,99,235,0.1)",  border: "rgba(37,99,235,0.3)",  icon: Truck },
+  entregado:   { label: "Entregado",  color: "text-green-400",  bg: "rgba(34,197,94,0.1)",  border: "rgba(34,197,94,0.3)",  icon: CheckCircle2 },
+  cancelado:   { label: "Cancelado",  color: "text-red-400",    bg: "rgba(239,68,68,0.1)",  border: "rgba(239,68,68,0.3)",  icon: XCircle },
+  // Estados legados (retrocompat con pedidos existentes)
+  pending:      { label: "Recibido",  color: "text-amber-400",  bg: "rgba(251,191,36,0.1)", border: "rgba(251,191,36,0.3)", icon: Clock },
+  preparing:    { label: "Preparando",color: "text-orange-400", bg: "rgba(249,115,22,0.1)", border: "rgba(249,115,22,0.3)", icon: Package },
+  "on-the-way": { label: "En camino", color: "text-blue-400",   bg: "rgba(37,99,235,0.1)",  border: "rgba(37,99,235,0.3)",  icon: Truck },
+  delivered:    { label: "Entregado", color: "text-green-400",  bg: "rgba(34,197,94,0.1)",  border: "rgba(34,197,94,0.3)",  icon: CheckCircle2 },
+  cancelled:    { label: "Cancelado", color: "text-red-400",    bg: "rgba(239,68,68,0.1)",  border: "rgba(239,68,68,0.3)",  icon: XCircle },
 };
 
-const STATUS_ORDER: OrderStatus[] = ["pending", "preparing", "on-the-way", "delivered", "cancelled"];
+const NEW_STATUS_ORDER: OrderStatus[] = ["nuevo", "confirmado", "preparando", "en-camino", "entregado", "cancelado"];
+const ALL_FILTER_OPTIONS: (OrderStatus | "all")[] = ["all", ...NEW_STATUS_ORDER];
+
+const getConfig = (status: string) =>
+  STATUS_CONFIG[status] ?? { label: status, color: "text-[#71717A]", bg: "rgba(39,39,42,0.5)", border: "rgba(63,63,70,0.4)", icon: Clock };
 
 interface Props {
   orders: Order[];
@@ -67,21 +79,54 @@ export function AdminOrders({ orders, onOrdersChange }: Props) {
 
   const trackingUrl = (id: string) => `${window.location.origin}/track/${id}`;
 
+  // Count by new statuses for summary row
+  const counts = {
+    nuevo: orders.filter(o => o.status === "nuevo").length,
+    confirmado: orders.filter(o => o.status === "confirmado").length,
+    preparando: orders.filter(o => o.status === "preparando" || o.status === "preparing").length,
+    "en-camino": orders.filter(o => o.status === "en-camino" || o.status === "on-the-way").length,
+    entregado: orders.filter(o => o.status === "entregado" || o.status === "delivered").length,
+    cancelado: orders.filter(o => o.status === "cancelado" || o.status === "cancelled").length,
+  };
+
   return (
     <div className="p-5 max-w-2xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-6"
-      >
+      <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="mb-5">
         <h2 className="text-xl font-bold text-white tracking-tight">Pedidos</h2>
         <p className="text-[#71717A] text-sm mt-0.5">{orders.length} pedidos en total</p>
+      </motion.div>
+
+      {/* Resumen por estado */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
+        className="grid grid-cols-3 gap-2 mb-5"
+      >
+        {(["nuevo","confirmado","preparando","en-camino","entregado","cancelado"] as const).map(s => {
+          const cfg = getConfig(s);
+          const count = counts[s as keyof typeof counts];
+          return (
+            <button
+              key={s}
+              onClick={() => setFilterStatus(s === filterStatus ? "all" : s)}
+              className="rounded-xl p-3 text-left transition-all duration-200"
+              style={{
+                background: filterStatus === s ? cfg.bg : "rgba(24,24,27,0.6)",
+                border: filterStatus === s ? `1px solid ${cfg.border}` : "1px solid rgba(63,63,70,0.4)",
+              }}
+            >
+              <p className={`text-lg font-black ${cfg.color}`}>{count}</p>
+              <p className="text-[#71717A] text-[10px] font-semibold uppercase tracking-wider mt-0.5">{cfg.label}</p>
+            </button>
+          );
+        })}
       </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.08 }}
+        transition={{ delay: 0.1 }}
         className="flex flex-col gap-3 mb-5"
       >
         <div className="relative">
@@ -98,7 +143,7 @@ export function AdminOrders({ orders, onOrdersChange }: Props) {
         </div>
 
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {(["all", ...STATUS_ORDER] as const).map(status => (
+          {ALL_FILTER_OPTIONS.map(status => (
             <button
               key={status}
               onClick={() => setFilterStatus(status as OrderStatus | "all")}
@@ -109,7 +154,7 @@ export function AdminOrders({ orders, onOrdersChange }: Props) {
                 color: filterStatus === status ? "#93C5FD" : "#71717A",
               }}
             >
-              {status === "all" ? "Todos" : STATUS_CONFIG[status as OrderStatus].label}
+              {status === "all" ? "Todos" : getConfig(status).label}
             </button>
           ))}
         </div>
@@ -126,7 +171,7 @@ export function AdminOrders({ orders, onOrdersChange }: Props) {
         <div className="flex flex-col gap-3">
           <AnimatePresence>
             {filtered.map((order, idx) => {
-              const cfg = STATUS_CONFIG[order.status];
+              const cfg = getConfig(order.status);
               const StatusIcon = cfg.icon;
               const isExpanded = expandedId === order.id;
               const mapsUrl = extractMapsUrl(order.address);
@@ -139,7 +184,7 @@ export function AdminOrders({ orders, onOrdersChange }: Props) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.04 }}
                   className="rounded-2xl overflow-hidden"
-                  style={{ background: "rgba(24,24,27,0.85)", border: "1px solid rgba(63,63,70,0.5)" }}
+                  style={{ background: "rgba(24,24,27,0.85)", border: `1px solid ${order.status === "nuevo" ? "rgba(168,85,247,0.3)" : "rgba(63,63,70,0.5)"}` }}
                 >
                   <button
                     className="w-full px-4 py-4 flex items-center gap-3 text-left"
@@ -244,9 +289,10 @@ export function AdminOrders({ orders, onOrdersChange }: Props) {
                           <div>
                             <p className="text-[#52525B] text-xs font-semibold uppercase tracking-wider mb-2">Cambiar estado</p>
                             <div className="grid grid-cols-2 gap-2">
-                              {STATUS_ORDER.map(status => {
-                                const sc = STATUS_CONFIG[status];
+                              {NEW_STATUS_ORDER.map(status => {
+                                const sc = getConfig(status);
                                 const Ic = sc.icon;
+                                const isActive = order.status === status;
                                 return (
                                   <motion.button
                                     key={status}
@@ -255,15 +301,12 @@ export function AdminOrders({ orders, onOrdersChange }: Props) {
                                     disabled={saving[order.id + status]}
                                     className="py-2.5 px-3 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all duration-200 disabled:opacity-60"
                                     style={{
-                                      background: order.status === status ? sc.bg : "rgba(39,39,42,0.6)",
-                                      border: order.status === status
-                                        ? `1px solid ${sc.color.replace("text-", "rgba(").replace("400", "0.4)")}`
-                                        : "1px solid rgba(63,63,70,0.4)",
-                                      color: order.status === status ? sc.color.replace("text-", "") : "#71717A",
+                                      background: isActive ? sc.bg : "rgba(39,39,42,0.6)",
+                                      border: isActive ? `1px solid ${sc.border}` : "1px solid rgba(63,63,70,0.4)",
                                     }}
                                   >
-                                    <Ic className={`w-3.5 h-3.5 ${order.status === status ? sc.color : "text-[#52525B]"}`} />
-                                    {sc.label}
+                                    <Ic className={`w-3.5 h-3.5 ${isActive ? sc.color : "text-[#52525B]"}`} />
+                                    <span className={isActive ? sc.color : "text-[#71717A]"}>{sc.label}</span>
                                   </motion.button>
                                 );
                               })}

@@ -1,54 +1,117 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { LayoutDashboard, ShoppingBag, Package, LogOut, Bell, Zap, Menu, X } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, Package, LogOut, Bell, Zap, Menu, X, Image } from "lucide-react";
 import { AdminLogin } from "./AdminLogin";
 import { AdminDashboard } from "./pages/AdminDashboard";
 import { AdminOrders } from "./pages/AdminOrders";
 import { AdminProducts } from "./pages/AdminProducts";
+import { AdminBanner } from "./pages/AdminBanner";
 import {
   isAdminLoggedIn, logoutAdmin,
   getOrders, getAdminProducts, getNewOrderCount,
+  getBanner, DEFAULT_BANNER,
 } from "./store";
-import { Order, AdminProduct } from "./types";
+import { Order, AdminProduct, BannerSettings } from "./types";
+import { supabase } from "../../lib/supabase";
+import { OrderNotifications, NotificationItem } from "./components/OrderNotification";
+import { playOrderNotificationSound } from "./utils/sound";
 
-type Tab = "dashboard" | "orders" | "products";
+type Tab = "dashboard" | "orders" | "products" | "banner";
 
 const NAV_ITEMS: { id: Tab; label: string; icon: React.ElementType }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "orders", label: "Pedidos", icon: ShoppingBag },
-  { id: "products", label: "Productos", icon: Package },
+  { id: "orders",    label: "Pedidos",   icon: ShoppingBag },
+  { id: "products",  label: "Productos", icon: Package },
+  { id: "banner",    label: "Banner",    icon: Image },
 ];
+
+function rowToOrder(row: Record<string, unknown>): Order {
+  return {
+    id: row.id as string,
+    createdAt: row.created_at as number,
+    items: row.items as Order["items"],
+    total: row.total as number,
+    address: row.address as string,
+    status: row.status as Order["status"],
+    estimatedTime: (row.estimated_time as string | null) ?? undefined,
+  };
+}
 
 export default function AdminShell() {
   const [loggedIn, setLoggedIn] = useState(isAdminLoggedIn());
   const [tab, setTab] = useState<Tab>("dashboard");
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<AdminProduct[]>([]);
+  const [banner, setBanner] = useState<BannerSettings>(DEFAULT_BANNER);
   const [newCount, setNewCount] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [lastSeen, setLastSeenTs] = useState(() => parseInt(localStorage.getItem("tp_last_seen") || "0"));
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const seenOrderIds = useRef<Set<string>>(new Set());
 
   const refreshData = useCallback(async () => {
     try {
-      const [fetchedOrders, fetchedProducts, count] = await Promise.all([
+      const [fetchedOrders, fetchedProducts, count, fetchedBanner] = await Promise.all([
         getOrders(),
         getAdminProducts(),
         getNewOrderCount(lastSeen),
+        getBanner(),
       ]);
       setOrders(fetchedOrders);
       setProducts(fetchedProducts);
       setNewCount(count);
+      setBanner(fetchedBanner);
     } catch (err) {
       console.error("Error cargando datos del admin:", err);
     }
   }, [lastSeen]);
 
+  // Polling fallback every 5 seconds
   useEffect(() => {
     if (!loggedIn) return;
     refreshData();
     const interval = setInterval(refreshData, 5000);
     return () => clearInterval(interval);
   }, [loggedIn, refreshData]);
+
+  // Supabase Realtime — listen for new orders
+  useEffect(() => {
+    if (!loggedIn) return;
+
+    const channel = supabase
+      .channel("admin-new-orders")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "orders" },
+        (payload) => {
+          const newOrder = rowToOrder(payload.new as Record<string, unknown>);
+
+          if (seenOrderIds.current.has(newOrder.id)) return;
+          seenOrderIds.current.add(newOrder.id);
+
+          setOrders(prev => [newOrder, ...prev]);
+          setNewCount(prev => prev + 1);
+
+          const notification: NotificationItem = {
+            id: `notif-${newOrder.id}-${Date.now()}`,
+            order: newOrder,
+            receivedAt: Date.now(),
+          };
+          setNotifications(prev => [notification, ...prev].slice(0, 5));
+
+          playOrderNotificationSound();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [loggedIn]);
+
+  const dismissNotification = useCallback((id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  }, []);
 
   const handleTabChange = (t: Tab) => {
     setTab(t);
@@ -67,6 +130,8 @@ export default function AdminShell() {
 
   return (
     <div className="min-h-screen bg-[#09090B] flex flex-col md:flex-row">
+      <OrderNotifications notifications={notifications} onDismiss={dismissNotification} />
+
       <AnimatePresence>
         {sidebarOpen && (
           <motion.div
@@ -172,6 +237,11 @@ export default function AdminShell() {
                 <AdminProducts products={products} onProductsChange={setProducts} />
               </motion.div>
             )}
+            {tab === "banner" && (
+              <motion.div key="banner" initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }} transition={{ duration: 0.25 }}>
+                <AdminBanner banner={banner} onBannerChange={setBanner} />
+              </motion.div>
+            )}
           </AnimatePresence>
         </main>
 
@@ -191,7 +261,7 @@ export default function AdminShell() {
               <button
                 key={item.id}
                 onClick={() => handleTabChange(item.id)}
-                className="relative flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl transition-all duration-200"
+                className="relative flex flex-col items-center gap-1 px-3 py-2.5 rounded-xl transition-all duration-200"
                 style={{ background: isActive ? "rgba(37,99,235,0.12)" : "transparent" }}
               >
                 <div className="relative">
@@ -260,7 +330,7 @@ function SidebarContent({ tab, newCount, onTabChange, onLogout, showClose, onClo
                 border: isActive ? "1px solid rgba(37,99,235,0.25)" : "1px solid transparent",
               }}
             >
-              <Icon className={`w-4.5 h-4.5 flex-shrink-0 ${isActive ? "text-blue-400" : "text-[#52525B]"}`} />
+              <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? "text-blue-400" : "text-[#52525B]"}`} />
               <span className={`text-sm font-medium ${isActive ? "text-white" : "text-[#71717A]"}`}>{item.label}</span>
               {hasBadge && (
                 <span
@@ -280,7 +350,6 @@ function SidebarContent({ tab, newCount, onTabChange, onLogout, showClose, onClo
           whileTap={{ scale: 0.98 }}
           onClick={onLogout}
           className="flex items-center gap-3 px-3 py-3 rounded-xl w-full text-[#71717A] hover:text-white transition-colors duration-200"
-          style={{ background: "transparent" }}
         >
           <LogOut className="w-4 h-4" />
           <span className="text-sm font-medium">Cerrar sesión</span>

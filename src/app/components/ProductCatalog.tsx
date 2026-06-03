@@ -124,11 +124,11 @@ function SodaCard({ product, quantity, onUpdateCart, index }: CardProps) {
             className="text-white font-black leading-none tracking-tight"
             style={{ fontSize: "2.4rem", letterSpacing: "-0.04em" }}
           >
-            SODA
+            {product.name.toUpperCase()}
           </h3>
           <div className="flex items-baseline gap-2 mt-1">
             <span className="text-blue-400 font-black text-2xl" style={{ letterSpacing: "-0.03em" }}>
-              $140
+              ${product.price}
             </span>
             <span className="text-[#52525B] text-sm font-medium">1 pz</span>
           </div>
@@ -211,10 +211,10 @@ function FrioCard({ product, quantity, onUpdateCart, index }: CardProps) {
             className="font-black leading-none tracking-tight"
             style={{ fontSize: "2.6rem", letterSpacing: "-0.05em", color: "#E2E8F0" }}
           >
-            FRÍO
+            {product.name.toUpperCase()}
           </h3>
           <p className="font-bold text-base mt-0.5" style={{ color: "rgba(147,197,253,0.9)", letterSpacing: "0.01em" }}>
-            $140 / 1 PZ
+            ${product.price} / 1 PZ
           </p>
           <p
             className="text-xs font-semibold mt-1 uppercase tracking-widest"
@@ -352,7 +352,7 @@ function VerdeCard({ product, quantity, onUpdateCart, index }: CardProps) {
               textShadow: "0 0 40px rgba(74,222,128,0.2)",
             }}
           >
-            VERDE
+            {product.name.toUpperCase()}
           </h3>
 
           <div className="mt-3 flex items-baseline gap-2">
@@ -360,7 +360,7 @@ function VerdeCard({ product, quantity, onUpdateCart, index }: CardProps) {
               className="font-black"
               style={{ fontSize: "3rem", letterSpacing: "-0.04em", color: "rgba(134,239,172,0.9)" }}
             >
-              140
+              {product.price}
             </span>
             <span style={{ color: "rgba(134,239,172,0.5)", fontSize: "1rem", fontWeight: 600 }}>/ 3.5g</span>
           </div>
@@ -389,7 +389,7 @@ function VerdeCard({ product, quantity, onUpdateCart, index }: CardProps) {
         <div className="mt-auto">
           <div className="w-full h-px mb-4" style={{ background: "linear-gradient(to right, rgba(134,239,172,0.15), transparent)" }} />
           <div className="flex items-center justify-between">
-            <p className="text-sm font-bold" style={{ color: "rgba(134,239,172,0.7)" }}>$140 / 3.5</p>
+            <p className="text-sm font-bold" style={{ color: "rgba(134,239,172,0.7)" }}>${product.price} / 3.5</p>
             <div className="flex items-center gap-1 rounded-xl p-1" style={{ background: "rgba(5,15,8,0.8)", border: "1px solid rgba(134,239,172,0.1)" }}>
               <motion.button
                 whileTap={{ scale: 0.82 }}
@@ -504,6 +504,7 @@ function DefaultCard({ product, quantity, onUpdateCart, index }: CardProps) {
 
 interface ProductCatalogProps {
   products: Product[];
+  promoProducts?: Product[];
   cart: Record<string, number>;
   totalCartPrice: number;
   onUpdateCart: (productId: string, quantity: number) => void;
@@ -511,7 +512,7 @@ interface ProductCatalogProps {
   onOpenCategory: (categoryKey: string) => void;
 }
 
-export function ProductCatalog({ products, cart, totalCartPrice, onUpdateCart, onContinue, onOpenCategory }: ProductCatalogProps) {
+export function ProductCatalog({ products, promoProducts = [], cart, totalCartPrice, onUpdateCart, onContinue, onOpenCategory }: ProductCatalogProps) {
   const totalItems = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
 
   return (
@@ -531,6 +532,7 @@ export function ProductCatalog({ products, cart, totalCartPrice, onUpdateCart, o
             <h2 className="text-2xl font-bold text-white tracking-tight">Menú</h2>
             <p className="text-[#71717A] text-sm mt-0.5">
               {products.filter(p => p.type !== "category").length} productos · {products.filter(p => p.type === "category").length} categorías
+              {promoProducts.length > 0 && ` · ${promoProducts.length} promos`}
             </p>
           </div>
           <div
@@ -603,6 +605,106 @@ export function ProductCatalog({ products, cart, totalCartPrice, onUpdateCart, o
             return <DefaultCard key={product.id} product={product} quantity={quantity} onUpdateCart={onUpdateCart} index={index} />;
           })}
         </div>
+
+        {promoProducts.length > 0 && (
+          <div className="mt-8">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="flex items-center gap-3 mb-5"
+            >
+              <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(250,204,21,0.3))" }} />
+              <div className="flex items-center gap-2">
+                <span className="text-yellow-400 text-sm">✦</span>
+                <span className="text-[#71717A] text-xs font-semibold uppercase tracking-widest">Promociones</span>
+                <span className="text-yellow-400 text-sm">✦</span>
+              </div>
+              <div className="flex-1 h-px" style={{ background: "linear-gradient(to left, transparent, rgba(250,204,21,0.3))" }} />
+            </motion.div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {promoProducts.map((promo, index) => {
+                const quantity = cart[promo.id] || 0;
+                return (
+                  <motion.div
+                    key={promo.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.35 + index * 0.1, type: "spring", stiffness: 120 }}
+                    className="relative rounded-2xl overflow-hidden"
+                    style={{
+                      background: "linear-gradient(145deg, rgba(24,24,27,0.95) 0%, rgba(15,15,18,0.98) 100%)",
+                      border: "1px solid rgba(250,204,21,0.25)",
+                      boxShadow: quantity > 0
+                        ? "0 0 24px rgba(250,204,21,0.2), inset 0 1px 0 rgba(250,204,21,0.1)"
+                        : "none",
+                    }}
+                  >
+                    <motion.div
+                      animate={{ opacity: [0.3, 0.6, 0.3] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: index * 1.2 }}
+                      className="absolute inset-0 rounded-2xl pointer-events-none"
+                      style={{ background: "linear-gradient(135deg, rgba(250,204,21,0.06) 0%, transparent 60%)" }}
+                    />
+                    <div className="relative p-4">
+                      <div className="mb-2">
+                        <span
+                          className="text-xs font-bold px-2 py-0.5 rounded-full text-yellow-400"
+                          style={{ background: "rgba(250,204,21,0.1)", border: "1px solid rgba(250,204,21,0.2)" }}
+                        >
+                          PROMO
+                        </span>
+                      </div>
+                      <p className="font-black text-white leading-tight text-base mb-1">{promo.name}</p>
+                      <p className="text-yellow-400 font-bold text-xl">${promo.price}</p>
+
+                      <div className="mt-4">
+                        {quantity > 0 ? (
+                          <div
+                            className="w-full flex items-center justify-between rounded-xl p-1"
+                            style={{ background: "rgba(39,39,42,0.8)" }}
+                          >
+                            <motion.button
+                              whileTap={{ scale: 0.85 }}
+                              onClick={() => onUpdateCart(promo.id, quantity - 1)}
+                              className="w-8 h-8 rounded-lg flex items-center justify-center text-white"
+                              style={{ background: "rgba(63,63,70,0.8)" }}
+                            >
+                              <Minus className="w-3 h-3" />
+                            </motion.button>
+                            <span className="font-bold text-sm text-white tabular-nums">{quantity}</span>
+                            <motion.button
+                              whileTap={{ scale: 0.85 }}
+                              onClick={() => onUpdateCart(promo.id, quantity + 1)}
+                              className="w-8 h-8 rounded-lg flex items-center justify-center text-white"
+                              style={{ background: "rgba(250,204,21,0.3)", border: "1px solid rgba(250,204,21,0.3)" }}
+                            >
+                              <Plus className="w-3 h-3" />
+                            </motion.button>
+                          </div>
+                        ) : (
+                          <motion.button
+                            whileHover={{ scale: 1.03 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => onUpdateCart(promo.id, 1)}
+                            className="w-full py-2 rounded-xl text-xs font-bold text-black"
+                            style={{
+                              background: "linear-gradient(135deg, #FACC15, #EAB308)",
+                              boxShadow: "0 0 14px rgba(250,204,21,0.3)",
+                            }}
+                          >
+                            Agregar
+                          </motion.button>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       <AnimatePresence>

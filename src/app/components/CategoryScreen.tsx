@@ -11,9 +11,6 @@ export interface Promo {
   id: string;
   name: string;
   price: number;
-  label: string;
-  description: string;
-  savings: string;
 }
 
 interface CategoryScreenProps {
@@ -147,108 +144,111 @@ export function CategoryScreen({
           })}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="flex items-center gap-3 mb-5"
-        >
-          <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(63,63,70,0.6))" }} />
-          <div className="flex items-center gap-1.5">
-            <Sparkles className="w-3 h-3 text-yellow-400" />
-            <span className="text-[#71717A] text-xs font-semibold uppercase tracking-widest">Promociones</span>
-            <Sparkles className="w-3 h-3 text-yellow-400" />
-          </div>
-          <div className="flex-1 h-px" style={{ background: "linear-gradient(to left, transparent, rgba(63,63,70,0.6))" }} />
-        </motion.div>
+        {promos.length > 0 && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="flex items-center gap-3 mb-5"
+            >
+              <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(63,63,70,0.6))" }} />
+              <div className="flex items-center gap-1.5">
+                <Sparkles className="w-3 h-3 text-yellow-400" />
+                <span className="text-[#71717A] text-xs font-semibold uppercase tracking-widest">Promociones</span>
+                <Sparkles className="w-3 h-3 text-yellow-400" />
+              </div>
+              <div className="flex-1 h-px" style={{ background: "linear-gradient(to left, transparent, rgba(63,63,70,0.6))" }} />
+            </motion.div>
 
-        <div className="grid grid-cols-2 gap-3">
-          {promos.map((promo, index) => {
-            const quantity = cart[promo.id] || 0;
-            return (
-              <motion.div
-                key={promo.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 + index * 0.1, type: "spring", stiffness: 120 }}
-                className="relative rounded-2xl overflow-hidden cursor-pointer"
-                style={{
-                  background: "linear-gradient(145deg, rgba(24,24,27,0.95) 0%, rgba(15,15,18,0.98) 100%)",
-                  border: "1px solid rgba(250,204,21,0.25)",
-                  boxShadow: quantity > 0
-                    ? "0 0 24px rgba(250,204,21,0.2), inset 0 1px 0 rgba(250,204,21,0.1)"
-                    : "0 0 0 rgba(0,0,0,0)",
-                }}
-              >
-                <motion.div
-                  animate={{ opacity: [0.3, 0.6, 0.3] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: index * 1.2 }}
-                  className="absolute inset-0 rounded-2xl"
-                  style={{ background: "linear-gradient(135deg, rgba(250,204,21,0.06) 0%, transparent 60%)", pointerEvents: "none" }}
-                />
-
-                <div className="relative p-4">
-                  <div className="mb-3">
-                    <span
-                      className="text-xs font-bold px-2 py-0.5 rounded-full text-yellow-400"
-                      style={{ background: "rgba(250,204,21,0.1)", border: "1px solid rgba(250,204,21,0.2)" }}
-                    >
-                      PROMO
-                    </span>
-                  </div>
-                  <p
-                    className="font-black text-white leading-none mb-1"
-                    style={{ fontSize: "1.5rem", letterSpacing: "-0.02em" }}
+            <div className="grid grid-cols-2 gap-3">
+              {promos.map((promo, index) => {
+                const quantity = cart[promo.id] || 0;
+                return (
+                  <motion.div
+                    key={promo.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.35 + index * 0.1, type: "spring", stiffness: 120 }}
+                    className="relative rounded-2xl overflow-hidden"
+                    style={{
+                      background: "linear-gradient(145deg, rgba(24,24,27,0.95) 0%, rgba(15,15,18,0.98) 100%)",
+                      border: "1px solid rgba(250,204,21,0.25)",
+                      boxShadow: quantity > 0
+                        ? "0 0 24px rgba(250,204,21,0.2), inset 0 1px 0 rgba(250,204,21,0.1)"
+                        : "0 0 0 rgba(0,0,0,0)",
+                    }}
                   >
-                    {promo.label}
-                  </p>
-                  <p className="text-[#71717A] text-xs mb-1">{promo.description}</p>
-                  <p className="text-yellow-400/70 text-xs font-medium">{promo.savings}</p>
+                    <motion.div
+                      animate={{ opacity: [0.3, 0.6, 0.3] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: index * 1.2 }}
+                      className="absolute inset-0 rounded-2xl"
+                      style={{ background: "linear-gradient(135deg, rgba(250,204,21,0.06) 0%, transparent 60%)", pointerEvents: "none" }}
+                    />
 
-                  <div className="mt-4 flex items-center justify-between">
-                    {quantity > 0 ? (
-                      <div
-                        className="w-full flex items-center justify-between rounded-xl p-1"
-                        style={{ background: "rgba(39,39,42,0.8)" }}
-                      >
-                        <motion.button
-                          whileTap={{ scale: 0.85 }}
-                          onClick={() => onUpdateCart(promo.id, quantity - 1)}
-                          className="w-8 h-8 rounded-lg flex items-center justify-center text-white"
-                          style={{ background: "rgba(63,63,70,0.8)" }}
+                    <div className="relative p-4">
+                      <div className="mb-2">
+                        <span
+                          className="text-xs font-bold px-2 py-0.5 rounded-full text-yellow-400"
+                          style={{ background: "rgba(250,204,21,0.1)", border: "1px solid rgba(250,204,21,0.2)" }}
                         >
-                          <Minus className="w-3 h-3" />
-                        </motion.button>
-                        <span className="font-bold text-sm text-white tabular-nums">{quantity}</span>
-                        <motion.button
-                          whileTap={{ scale: 0.85 }}
-                          onClick={() => onUpdateCart(promo.id, quantity + 1)}
-                          className="w-8 h-8 rounded-lg flex items-center justify-center text-white"
-                          style={{ background: "rgba(250,204,21,0.3)", border: "1px solid rgba(250,204,21,0.3)" }}
-                        >
-                          <Plus className="w-3 h-3" />
-                        </motion.button>
+                          PROMO
+                        </span>
                       </div>
-                    ) : (
-                      <motion.button
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => onUpdateCart(promo.id, 1)}
-                        className="w-full py-2 rounded-xl text-xs font-bold text-black transition-all"
-                        style={{
-                          background: "linear-gradient(135deg, #FACC15, #EAB308)",
-                          boxShadow: "0 0 14px rgba(250,204,21,0.3)",
-                        }}
+                      <p
+                        className="font-black text-white leading-tight mb-1"
+                        style={{ fontSize: "1rem", letterSpacing: "-0.01em" }}
                       >
-                        Agregar al carrito
-                      </motion.button>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+                        {promo.name}
+                      </p>
+                      <p className="text-yellow-400 font-bold text-xl">${promo.price}</p>
+
+                      <div className="mt-4">
+                        {quantity > 0 ? (
+                          <div
+                            className="w-full flex items-center justify-between rounded-xl p-1"
+                            style={{ background: "rgba(39,39,42,0.8)" }}
+                          >
+                            <motion.button
+                              whileTap={{ scale: 0.85 }}
+                              onClick={() => onUpdateCart(promo.id, quantity - 1)}
+                              className="w-8 h-8 rounded-lg flex items-center justify-center text-white"
+                              style={{ background: "rgba(63,63,70,0.8)" }}
+                            >
+                              <Minus className="w-3 h-3" />
+                            </motion.button>
+                            <span className="font-bold text-sm text-white tabular-nums">{quantity}</span>
+                            <motion.button
+                              whileTap={{ scale: 0.85 }}
+                              onClick={() => onUpdateCart(promo.id, quantity + 1)}
+                              className="w-8 h-8 rounded-lg flex items-center justify-center text-white"
+                              style={{ background: "rgba(250,204,21,0.3)", border: "1px solid rgba(250,204,21,0.3)" }}
+                            >
+                              <Plus className="w-3 h-3" />
+                            </motion.button>
+                          </div>
+                        ) : (
+                          <motion.button
+                            whileHover={{ scale: 1.03 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => onUpdateCart(promo.id, 1)}
+                            className="w-full py-2 rounded-xl text-xs font-bold text-black transition-all"
+                            style={{
+                              background: "linear-gradient(135deg, #FACC15, #EAB308)",
+                              boxShadow: "0 0 14px rgba(250,204,21,0.3)",
+                            }}
+                          >
+                            Agregar al carrito
+                          </motion.button>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </>
+        )}
       </div>
 
       <AnimatePresence>

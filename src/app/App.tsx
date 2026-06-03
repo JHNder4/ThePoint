@@ -6,87 +6,103 @@ import { Cart, AllItems } from "./components/Cart";
 import { LocationForm } from "./components/LocationForm";
 import { OrderConfirmation } from "./components/OrderConfirmation";
 import { CategoryScreen, CategoryItem, Promo } from "./components/CategoryScreen";
-import { saveOrder, getAdminProducts } from "./admin/store";
+import { saveOrder, getAdminProducts, DEFAULT_ADMIN_PRODUCTS } from "./admin/store";
 import { AdminProduct } from "./admin/types";
 
 type Screen = "home" | "products" | "cart" | "location" | "confirmation" | "prerolls" | "comestibles";
 
-const BASE_REGULAR_PRODUCTS: Product[] = [
-  { id: "soda", name: "Soda", price: 140, image: "/images/09fed79a-41e2-4c6a-b19a-c78b93d7c0e6.jpg" },
-  { id: "soda-lavada", name: "Soda Lavada", price: 500, image: "/images/OIP.jpg" },
-  { id: "verde", name: "Verde", price: 140, image: "https://images.unsplash.com/photo-1571934811356-5cc061b6821f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" },
-  { id: "frio", name: "Frío", price: 140, image: "/images/0eaf463f-8af7-4b29-bbe2-b4553197254c.jpg" },
-];
-
-const BASE_CATEGORY_PRODUCTS: Product[] = [
-  { id: "cat-prerolls", name: "Pre-rolls", price: 0, type: "category", categoryKey: "prerolls", itemCount: 4 },
-  { id: "cat-comestibles", name: "Comestibles", price: 0, type: "category", categoryKey: "comestibles", itemCount: 2 },
-];
-
-const PREROLLS_ITEMS: CategoryItem[] = [
-  { id: "preroll-uva", name: "Blunt Wrap XXL Uva", price: 80 },
-  { id: "preroll-blueberry", name: "Blunt Wrap XXL Blueberry", price: 80 },
-  { id: "preroll-chocolate", name: "Blunt Wrap XXL Chocolate Amargo", price: 90 },
-  { id: "preroll-mango", name: "Blunt Wrap XXL Mango", price: 85 },
-];
-
-const PREROLLS_PROMOS: Promo[] = [
-  { id: "promo-prerolls-2x150", name: "Promo Pre-rolls 2x150", price: 150, label: "2 × $150", description: "2 Pre-rolls a elección", savings: "Ahorra hasta $60" },
-  { id: "promo-prerolls-3x220", name: "Promo Pre-rolls 3x220", price: 220, label: "3 × $220", description: "3 Pre-rolls a elección", savings: "Ahorra hasta $50" },
-];
-
-const COMESTIBLES_ITEMS: CategoryItem[] = [
-  { id: "comestible-brownie", name: "Brownies de chocolate", price: 80 },
-  { id: "comestible-galletas", name: "Galletas con chispas de chocolate", price: 80 },
-];
-
-const COMESTIBLES_PROMOS: Promo[] = [
-  { id: "promo-comestibles-2x150", name: "Promo Comestibles 2x150", price: 150, label: "2 × $150", description: "2 Comestibles a elección", savings: "Ahorra $10" },
-  { id: "promo-comestibles-3x220", name: "Promo Comestibles 3x220", price: 220, label: "3 × $220", description: "3 Comestibles a elección", savings: "Ahorra $20" },
-];
-
-const STATIC_ITEMS: AllItems = Object.fromEntries(
-  [
-    ...BASE_REGULAR_PRODUCTS,
-    ...PREROLLS_ITEMS,
-    ...COMESTIBLES_ITEMS,
-    ...PREROLLS_PROMOS,
-    ...COMESTIBLES_PROMOS,
-  ].map(item => [item.id, { name: item.name, price: item.price }])
-);
-
-function applyAdminOverrides(base: Product[], adminProds: AdminProduct[]): Product[] {
-  return base
-    .map(p => {
-      const ap = adminProds.find(a => a.id === p.id);
-      if (!ap) return p;
-      return { ...p, name: ap.name, price: ap.isCategory ? p.price : ap.price };
-    })
-    .filter(p => {
-      const ap = adminProds.find(a => a.id === p.id);
-      return ap ? ap.available : true;
-    });
+function toProduct(p: AdminProduct): Product {
+  return {
+    id: p.id,
+    name: p.name,
+    price: p.isPromo && p.promoPrice > 0 ? p.promoPrice : p.price,
+    image: p.image || undefined,
+    type: p.isCategory ? "category" : "product",
+    categoryKey: p.categoryKey,
+  };
 }
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>("home");
   const [cart, setCart] = useState<Record<string, number>>({});
   const [address, setAddress] = useState("");
-  const [adminProds, setAdminProds] = useState<AdminProduct[]>([]);
+  const [adminProds, setAdminProds] = useState<AdminProduct[]>(DEFAULT_ADMIN_PRODUCTS);
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
     getAdminProducts().then(setAdminProds).catch(() => {});
   }, []);
 
-  const regularProducts = useMemo(() => applyAdminOverrides(BASE_REGULAR_PRODUCTS, adminProds), [adminProds]);
-  const categoryProducts = useMemo(() => applyAdminOverrides(BASE_CATEGORY_PRODUCTS, adminProds), [adminProds]);
-  const allDisplayProducts = useMemo(() => [...regularProducts, ...categoryProducts], [regularProducts, categoryProducts]);
+  // Regular products: no categoryKey, not a category button, not a promo
+  const regularProducts = useMemo<Product[]>(() =>
+    adminProds
+      .filter(p => !p.isCategory && !p.categoryKey && !p.isPromo && p.available)
+      .map(toProduct),
+    [adminProds]
+  );
 
+  // Category buttons (Pre-rolls, Comestibles)
+  const categoryProducts = useMemo<Product[]>(() =>
+    adminProds
+      .filter(p => p.isCategory && p.available)
+      .map(p => ({
+        id: p.id,
+        name: p.name,
+        price: 0,
+        type: "category" as const,
+        categoryKey: p.categoryKey,
+        itemCount: adminProds.filter(x => x.categoryKey === p.categoryKey && !x.isCategory).length,
+      })),
+    [adminProds]
+  );
+
+  // Promo products for the main catalog: isPromo = true, no categoryKey (or not in a subcategory)
+  const mainPromoProducts = useMemo<Product[]>(() =>
+    adminProds
+      .filter(p => p.isPromo && !p.categoryKey && p.available)
+      .map(toProduct),
+    [adminProds]
+  );
+
+  const allDisplayProducts = useMemo(
+    () => [...regularProducts, ...categoryProducts],
+    [regularProducts, categoryProducts]
+  );
+
+  // Category items by key
+  const categoryItems = useMemo(() => {
+    const map: Record<string, CategoryItem[]> = {};
+    adminProds
+      .filter(p => p.categoryKey && !p.isCategory && !p.isPromo && p.available)
+      .forEach(p => {
+        const key = p.categoryKey!;
+        if (!map[key]) map[key] = [];
+        map[key].push({ id: p.id, name: p.name, price: p.price });
+      });
+    return map;
+  }, [adminProds]);
+
+  // Category promos by key
+  const categoryPromos = useMemo(() => {
+    const map: Record<string, Promo[]> = {};
+    adminProds
+      .filter(p => p.categoryKey && p.isPromo && p.available)
+      .forEach(p => {
+        const key = p.categoryKey!;
+        if (!map[key]) map[key] = [];
+        map[key].push({ id: p.id, name: p.name, price: p.promoPrice > 0 ? p.promoPrice : p.price });
+      });
+    return map;
+  }, [adminProds]);
+
+  // All items lookup for cart (covers ALL products including promos and category items)
   const allItems: AllItems = useMemo(() => {
-    const overrideEntries = regularProducts.map(p => [p.id, { name: p.name, price: p.price }] as const);
-    return { ...STATIC_ITEMS, ...Object.fromEntries(overrideEntries) };
-  }, [regularProducts]);
+    const entries = adminProds.map(p => [
+      p.id,
+      { name: p.name, price: p.isPromo && p.promoPrice > 0 ? p.promoPrice : p.price },
+    ] as const);
+    return Object.fromEntries(entries);
+  }, [adminProds]);
 
   const totalCartItems = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
   const totalCartPrice = Object.entries(cart).reduce(
@@ -127,7 +143,7 @@ export default function App() {
         items: cartEntries,
         total,
         address,
-        status: "pending",
+        status: "nuevo",
       });
     } catch (err) {
       console.error("Error guardando pedido en Supabase:", err);
@@ -168,6 +184,7 @@ export default function App() {
           <ProductCatalog
             key="products"
             products={allDisplayProducts}
+            promoProducts={mainPromoProducts}
             cart={cart}
             totalCartPrice={totalCartPrice}
             onUpdateCart={handleUpdateCart}
@@ -181,8 +198,8 @@ export default function App() {
             key="prerolls"
             title="Pre-rolls"
             menuLabel="MENÚ PRE ROLLS XXL"
-            items={PREROLLS_ITEMS}
-            promos={PREROLLS_PROMOS}
+            items={categoryItems["prerolls"] ?? []}
+            promos={categoryPromos["prerolls"] ?? []}
             cart={cart}
             totalCartItems={totalCartItems}
             totalCartPrice={totalCartPrice}
@@ -197,8 +214,8 @@ export default function App() {
             key="comestibles"
             title="Comestibles"
             menuLabel="MENÚ COMESTIBLES"
-            items={COMESTIBLES_ITEMS}
-            promos={COMESTIBLES_PROMOS}
+            items={categoryItems["comestibles"] ?? []}
+            promos={categoryPromos["comestibles"] ?? []}
             cart={cart}
             totalCartItems={totalCartItems}
             totalCartPrice={totalCartPrice}
