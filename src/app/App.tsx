@@ -256,53 +256,7 @@ export default function App() {
             onBackToHome={handleBackToHome}
           />
         )}
-            </AnimatePresence>
-
-      <div
-        onMouseEnter={() => setShowCopyright(true)}
-        onMouseLeave={() => setShowCopyright(false)}
-        onClick={() => setShowCopyright(!showCopyright)}
-        style={{
-          position: "fixed",
-          bottom: "12px",
-          right: "12px",
-          zIndex: 9999,
-        }}
-      >
-        <div
-          style={{
-            fontSize: "11px",
-            opacity: 0.18,
-            color: "#ffffff",
-            cursor: "pointer",
-            userSelect: "none",
-            transition: "all 0.3s ease",
-          }}
-        >
-          ©
-        </div>
-
-        {showCopyright && (
-          <div
-            style={{
-              position: "absolute",
-              bottom: "24px",
-              right: "0",
-              background: "rgba(0,0,0,0.92)",
-              color: "#fff",
-              padding: "8px 12px",
-              borderRadius: "10px",
-              fontSize: "12px",
-              whiteSpace: "nowrap",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.45)",
-              backdropFilter: "blur(8px)",
-            }}
-          >
-            © 2026 ThePoint. © JHNder.
-          </div>
-        )}
-      </div>
-
+      </AnimatePresence>
     </div>
   );
 }
