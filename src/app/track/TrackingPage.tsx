@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { Analytics } from "@vercel/analytics/react";
 import {
   Zap, CheckCircle2, Clock, Truck, PackageCheck,
   XCircle, Package, ShoppingBag, ThumbsUp, Sparkles,
@@ -108,8 +109,18 @@ export function TrackingPage({ orderId }: TrackingPageProps) {
     };
   }, [orderId]);
 
-  if (order === null) return <LoadingState />;
-  if (order === "not-found") return <NotFoundState orderId={orderId} />;
+  if (order === null) return (
+    <>
+      <LoadingState />
+      <Analytics />
+    </>
+  );
+  if (order === "not-found") return (
+    <>
+      <NotFoundState orderId={orderId} />
+      <Analytics />
+    </>
+  );
 
   const isCancelled = CANCELLED_VALUES.has(order.status);
   const currentStep = getProgress(order.status);
@@ -309,6 +320,7 @@ export function TrackingPage({ orderId }: TrackingPageProps) {
         </div>
 
       </main>
+      <Analytics />
     </div>
   );
 }

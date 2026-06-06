@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { Analytics } from "@vercel/analytics/react";
 import { LayoutDashboard, ShoppingBag, Package, LogOut, Bell, Zap, Menu, X, Image } from "lucide-react";
 import { AdminLogin } from "./AdminLogin";
 import { AdminDashboard } from "./pages/AdminDashboard";
@@ -125,7 +126,12 @@ export default function AdminShell() {
   };
 
   if (!loggedIn) {
-    return <AdminLogin onLogin={() => { setLoggedIn(true); }} />;
+    return (
+      <>
+        <AdminLogin onLogin={() => { setLoggedIn(true); }} />
+        <Analytics />
+      </>
+    );
   }
 
   return (
@@ -283,6 +289,7 @@ export default function AdminShell() {
           })}
         </nav>
       </div>
+      <Analytics />
     </div>
   );
 }

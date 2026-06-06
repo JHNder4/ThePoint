@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { AnimatePresence } from "motion/react";
+import { Analytics } from "@vercel/analytics/react";
 import { HomeScreen } from "./components/HomeScreen";
 import { ProductCatalog, Product } from "./components/ProductCatalog";
 import { Cart, AllItems } from "./components/Cart";
@@ -174,135 +175,92 @@ export default function App() {
   };
 
   return (
-    <div className="size-full dark">
-      <AnimatePresence mode="wait">
-        {currentScreen === "home" && (
-          <HomeScreen key="home" onStartOrder={() => setCurrentScreen("products")} />
-        )}
+    <>
+      <div className="size-full dark">
+        <AnimatePresence mode="wait">
+          {currentScreen === "home" && (
+            <HomeScreen key="home" onStartOrder={() => setCurrentScreen("products")} />
+          )}
 
-        {currentScreen === "products" && (
-          <ProductCatalog
-            key="products"
-            products={allDisplayProducts}
-            promoProducts={mainPromoProducts}
-            cart={cart}
-            totalCartPrice={totalCartPrice}
-            onUpdateCart={handleUpdateCart}
-            onContinue={() => setCurrentScreen("cart")}
-            onOpenCategory={(key) => setCurrentScreen(key as Screen)}
-          />
-        )}
+          {currentScreen === "products" && (
+            <ProductCatalog
+              key="products"
+              products={allDisplayProducts}
+              promoProducts={mainPromoProducts}
+              cart={cart}
+              totalCartPrice={totalCartPrice}
+              onUpdateCart={handleUpdateCart}
+              onContinue={() => setCurrentScreen("cart")}
+              onOpenCategory={(key) => setCurrentScreen(key as Screen)}
+            />
+          )}
 
-        {currentScreen === "prerolls" && (
-          <CategoryScreen
-            key="prerolls"
-            title="Pre-rolls"
-            menuLabel="MENÚ PRE ROLLS XXL"
-            items={categoryItems["prerolls"] ?? []}
-            promos={categoryPromos["prerolls"] ?? []}
-            cart={cart}
-            totalCartItems={totalCartItems}
-            totalCartPrice={totalCartPrice}
-            onUpdateCart={handleUpdateCart}
-            onBack={() => setCurrentScreen("products")}
-            onViewCart={() => setCurrentScreen("cart")}
-          />
-        )}
+          {currentScreen === "prerolls" && (
+            <CategoryScreen
+              key="prerolls"
+              title="Pre-rolls"
+              menuLabel="MENÚ PRE ROLLS XXL"
+              items={categoryItems["prerolls"] ?? []}
+              promos={categoryPromos["prerolls"] ?? []}
+              cart={cart}
+              totalCartItems={totalCartItems}
+              totalCartPrice={totalCartPrice}
+              onUpdateCart={handleUpdateCart}
+              onBack={() => setCurrentScreen("products")}
+              onViewCart={() => setCurrentScreen("cart")}
+            />
+          )}
 
-        {currentScreen === "comestibles" && (
-          <CategoryScreen
-            key="comestibles"
-            title="Comestibles"
-            menuLabel="MENÚ COMESTIBLES"
-            items={categoryItems["comestibles"] ?? []}
-            promos={categoryPromos["comestibles"] ?? []}
-            cart={cart}
-            totalCartItems={totalCartItems}
-            totalCartPrice={totalCartPrice}
-            onUpdateCart={handleUpdateCart}
-            onBack={() => setCurrentScreen("products")}
-            onViewCart={() => setCurrentScreen("cart")}
-          />
-        )}
+          {currentScreen === "comestibles" && (
+            <CategoryScreen
+              key="comestibles"
+              title="Comestibles"
+              menuLabel="MENÚ COMESTIBLES"
+              items={categoryItems["comestibles"] ?? []}
+              promos={categoryPromos["comestibles"] ?? []}
+              cart={cart}
+              totalCartItems={totalCartItems}
+              totalCartPrice={totalCartPrice}
+              onUpdateCart={handleUpdateCart}
+              onBack={() => setCurrentScreen("products")}
+              onViewCart={() => setCurrentScreen("cart")}
+            />
+          )}
 
-        {currentScreen === "cart" && (
-          <Cart
-            key="cart"
-            allItems={allItems}
-            cart={cart}
-            onBack={() => setCurrentScreen("products")}
-            onContinue={() => setCurrentScreen("location")}
-          />
-        )}
+          {currentScreen === "cart" && (
+            <Cart
+              key="cart"
+              allItems={allItems}
+              cart={cart}
+              onBack={() => setCurrentScreen("products")}
+              onContinue={() => setCurrentScreen("location")}
+            />
+          )}
 
-        {currentScreen === "location" && (
-          <LocationForm
-            key="location"
-            onBack={() => setCurrentScreen("cart")}
-            onContinue={(addr) => {
-              setAddress(addr);
-              setCurrentScreen("confirmation");
-            }}
-          />
-        )}
+          {currentScreen === "location" && (
+            <LocationForm
+              key="location"
+              onBack={() => setCurrentScreen("cart")}
+              onContinue={(addr) => {
+                setAddress(addr);
+                setCurrentScreen("confirmation");
+              }}
+            />
+          )}
 
-        {currentScreen === "confirmation" && (
-          <OrderConfirmation
-            key="confirmation"
-            allItems={allItems}
-            cart={cart}
-            address={address}
-            onSendWhatsApp={handleSendWhatsApp}
-            onBackToHome={handleBackToHome}
-          />
-        )}
-            </AnimatePresence>
-
-      <div
-        onMouseEnter={() => setShowCopyright(true)}
-        onMouseLeave={() => setShowCopyright(false)}
-        onClick={() => setShowCopyright(!showCopyright)}
-        style={{
-          position: "fixed",
-          bottom: "12px",
-          right: "12px",
-          zIndex: 9999,
-        }}
-      >
-        <div
-          style={{
-            fontSize: "11px",
-            opacity: 0.18,
-            color: "#ffffff",
-            cursor: "pointer",
-            userSelect: "none",
-            transition: "all 0.3s ease",
-          }}
-        >
-          ©
-        </div>
-
-        {showCopyright && (
-          <div
-            style={{
-              position: "absolute",
-              bottom: "24px",
-              right: "0",
-              background: "rgba(0,0,0,0.92)",
-              color: "#fff",
-              padding: "8px 12px",
-              borderRadius: "10px",
-              fontSize: "12px",
-              whiteSpace: "nowrap",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.45)",
-              backdropFilter: "blur(8px)",
-            }}
-          >
-            © 2026 ThePoint. © JHNder.
-          </div>
-        )}
+          {currentScreen === "confirmation" && (
+            <OrderConfirmation
+              key="confirmation"
+              allItems={allItems}
+              cart={cart}
+              address={address}
+              onSendWhatsApp={handleSendWhatsApp}
+              onBackToHome={handleBackToHome}
+            />
+          )}
+        </AnimatePresence>
       </div>
-
-    </div>
+      <Analytics />
+    </>
   );
 }
