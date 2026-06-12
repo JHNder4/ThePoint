@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { LayoutDashboard, ShoppingBag, Package, LogOut, Bell, Zap, Menu, X, Image } from "lucide-react";
 import { AdminLogin } from "./AdminLogin";
 import { AdminDashboard } from "./pages/AdminDashboard";
@@ -130,6 +131,7 @@ export default function AdminShell() {
       <>
         <AdminLogin onLogin={() => { setLoggedIn(true); }} />
         <Analytics />
+        <SpeedInsights />
       </>
     );
   }
@@ -290,6 +292,7 @@ export default function AdminShell() {
         </nav>
       </div>
       <Analytics />
+      <SpeedInsights />
     </div>
   );
 }
